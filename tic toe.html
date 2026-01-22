@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body{
+            height: 100vh;
+            margin: 0;
+            background-color: rgb(177, 142, 142);
+            color: white;
+            font-family: Arial, Helvetica, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+
+        }
+        #resetbtn{
+          margin-top: 20px;
+          padding: 10px;
+          font-size: 16px;
+          cursor: pointer;
+          background-color: #4CAF50;
+          color: white;
+          border: none;
+          box-shadow:0 2px 4px rgba(198, 54, 54, 0.2); 
+          transition: background-color 0.3s ease;}
+
+        #resetbtn:hover{
+            background-color: #bd0606;
+        }
+
+        #board{
+            display: grid;
+            grid-template-columns: repeat(3,100px);
+            margin-top: 10px;
+        }
+        .cell{
+            background-color: #4CAF50;
+            color: tomato;
+            width: 100px;
+            height: 100px;
+            display: flex;
+            justify-content: center;    
+            align-items: center;
+            font-size: 48px;
+            border: 2px solid white;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+
+        }
+        .cell:hover{
+            background-color: #e20909;
+        }
+
+        #winner{
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #ef240a;
+        }
+    </style>
+
+</head>
+<body>
+    <div id="board"></div>
+    <div id="winner"></div>
+    <button id="resetbtn" type="button" onclick="resetGame()">Reset Game</button>
+
+
+    <script>
+        const board=document.getElementById("board");
+        const winnerDisplay=document.getElementById("winner");
+        const resetBtn=document.getElementById("resetbtn");
+
+
+        let currentPlayer="X";
+        let gameBoard=["","","","","","","","",""];
+
+        let gameActive=true;
+        function checkWinner(){
+            const winPattern=[
+                [0,1,2],[3,4,5],[6,7,8],
+                [0,3,6],[1,4,7],[2,5,8],
+                [0,4,8],[2,4,6]
+            ];
+            for(const pattern of winPattern){
+                const [a,b,c]=pattern;
+                if(gameBoard[a]&&gameBoard[a]===gameBoard[b]&&gameBoard[a]===gameBoard[c]){
+                    return gameBoard[a];
+                }
+            }
+            return null;
+        }
+        function checkDraw(){
+            return !gameBoard.includes("");
+        }
+        function handleClick(index){
+            if(!gameActive||gameBoard[index]!==""){
+                return;
+            }
+            gameBoard[index]=currentPlayer;
+
+           document.getElementById(`cell${index}`).innerText=currentPlayer;
+            const winner=checkWinner();
+            if(winner){
+                winnerDisplay.innerText=`Player ${winner} wins!`;
+                gameActive=false;
+                
+            }
+            else if(checkDraw()){
+                winnerDisplay.innerText="It's a draw!";
+                gameActive=false;
+                
+            }
+            currentPlayer=currentPlayer==="X"?"O":"X";
+        }
+
+        function resetGame(){
+           
+            gameBoard=["","","","","","","","",""];
+            gameActive=true;
+            currentPlayer="X";
+            winnerDisplay.innerText="";
+            document.querySelectorAll(`.cell`).forEach(cell=>{
+                cell.innerText="";
+            });
+        }
+        function createCell(index){
+            const cell=document.createElement("div");
+            cell.className="cell";
+            cell.id=`cell${index}`;
+            cell.addEventListener("click",()=>handleClick(index));
+          return cell;
+        }
+        for(let i=0;i<9;i++){
+            const cell=createCell(i);
+            board.appendChild(cell);
+        }
+
+
+
+    </script>
+</body>
+</html>
